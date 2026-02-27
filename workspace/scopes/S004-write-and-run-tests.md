@@ -4,8 +4,8 @@ title: Write and Run Tests
 phase: test
 status: open
 agent_id: 
-created_at: 2026-02-27T11:35:04.642Z
-updated_at: 2026-02-27T11:35:04.642Z
+created_at: 2026-02-27T11:37:45.740Z
+updated_at: 2026-02-27T11:37:45.740Z
 priority: normal
 ---
 
@@ -14,7 +14,7 @@ priority: normal
 Write unit, integration, and end-to-end tests. Achieve target test coverage and fix any failures found.
 
 Requirements context:
-Build a simple TODO API with user authentication, task CRUD, and tagging.
+Build a RESTful e-commerce API with products, cart, checkout, and payment processing.
 
 ## Inputs
 
