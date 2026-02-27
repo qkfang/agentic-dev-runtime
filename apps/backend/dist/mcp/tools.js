@@ -243,7 +243,7 @@ async function handleTool(name, args) {
                         byPhase[s.phase] = [];
                     byPhase[s.phase].push(s);
                 }
-                const phaseOrder = ['analyze', 'design', 'build', 'test', 'deploy', 'monitor'];
+                const phaseOrder = bootstrap_config_1.PHASE_ORDER;
                 for (let i = 1; i < phaseOrder.length; i++) {
                     const prevPhase = phaseOrder[i - 1];
                     const currPhase = phaseOrder[i];
@@ -260,7 +260,7 @@ async function handleTool(name, args) {
                 if (scopes.length === 0) {
                     suggestions.push('No scopes found. Use bootstrap_project to initialize.');
                 }
-                const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                const oneDayAgo = new Date(Date.now() - bootstrap_config_1.ONE_DAY_MS).toISOString();
                 for (const s of scopes.filter(s => s.status === 'active' && s.updated_at < oneDayAgo)) {
                     suggestions.push(`Scope ${s.scope_id} has been active since ${s.updated_at} — may be stale`);
                 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PHASE_METADATA = exports.BOOTSTRAP_PHASES = void 0;
+exports.ONE_DAY_MS = exports.PHASE_ORDER = exports.PHASE_METADATA = exports.BOOTSTRAP_PHASES = void 0;
 exports.truncateAtWordBoundary = truncateAtWordBoundary;
 exports.BOOTSTRAP_PHASES = [
     'analyze', 'design', 'build', 'test', 'deploy',
@@ -37,7 +37,10 @@ exports.PHASE_METADATA = {
         outputs: '- deployment/monitoring/ (dashboards and alerts)\n- docs/observability.md',
     },
 };
-/** Truncate text to a maximum length at a word boundary, appending '…' if truncated. */
+/** Ordered list of SDLC phases used for dependency/triage checks. */
+exports.PHASE_ORDER = ['analyze', 'design', 'build', 'test', 'deploy', 'monitor'];
+/** One day in milliseconds — used for stale-active-scope detection. */
+exports.ONE_DAY_MS = 24 * 60 * 60 * 1000;
 function truncateAtWordBoundary(text, maxLength) {
     if (text.length <= maxLength)
         return text;

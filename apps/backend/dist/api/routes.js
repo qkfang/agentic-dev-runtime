@@ -41,7 +41,7 @@ const router = (0, express_1.Router)();
 // POST /bootstrap
 router.post('/bootstrap', (req, res) => {
     try {
-        const requirements = typeof req.body === 'string' ? req.body : req.body?.requirements ?? req.body?.text ?? '';
+        const requirements = typeof req.body === 'string' ? req.body : req.body?.requirements_md ?? req.body?.requirements ?? req.body?.text ?? '';
         if (!requirements || requirements.trim().length === 0) {
             res.status(400).json({ error: 'requirements text is required' });
             return;
@@ -212,10 +212,9 @@ router.post('/project/triage', (_req, res) => {
             byPhase[s.phase].push(s);
         }
         // Detect phases with no open/active scopes that have done predecessors
-        const phaseOrder = ['analyze', 'design', 'build', 'test', 'deploy', 'monitor'];
-        for (let i = 1; i < phaseOrder.length; i++) {
-            const prevPhase = phaseOrder[i - 1];
-            const currPhase = phaseOrder[i];
+        for (let i = 1; i < bootstrap_config_1.PHASE_ORDER.length; i++) {
+            const prevPhase = bootstrap_config_1.PHASE_ORDER[i - 1];
+            const currPhase = bootstrap_config_1.PHASE_ORDER[i];
             const prevScopes = byPhase[prevPhase] ?? [];
             const currScopes = byPhase[currPhase] ?? [];
             const prevAllDone = prevScopes.length > 0 && prevScopes.every(s => s.status === 'done');
@@ -234,7 +233,7 @@ router.post('/project/triage', (_req, res) => {
             suggestions.push('No scopes found. Use POST /bootstrap to initialize the project.');
         }
         // Detect long-running active scopes (updated more than 24h ago)
-        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const oneDayAgo = new Date(Date.now() - bootstrap_config_1.ONE_DAY_MS).toISOString();
         const staleActive = scopes.filter(s => s.status === 'active' && s.updated_at < oneDayAgo);
         for (const s of staleActive) {
             suggestions.push(`Scope ${s.scope_id} (${s.title}) has been active since ${s.updated_at} — may be stale`);

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import * as store from '../scopes/scope-store';
 import { generateScopeId } from '../scopes/scope-types';
-import { BOOTSTRAP_PHASES, PHASE_METADATA, truncateAtWordBoundary } from '../scopes/bootstrap-config';
+import { BOOTSTRAP_PHASES, PHASE_METADATA, PHASE_ORDER, ONE_DAY_MS, truncateAtWordBoundary } from '../scopes/bootstrap-config';
 
 const router = Router();
 
@@ -9,7 +9,7 @@ const router = Router();
 router.post('/bootstrap', (req: Request, res: Response) => {
   try {
     const requirements: string =
-      typeof req.body === 'string' ? req.body : req.body?.requirements ?? req.body?.text ?? '';
+      typeof req.body === 'string' ? req.body : req.body?.requirements_md ?? req.body?.requirements ?? req.body?.text ?? '';
 
     if (!requirements || requirements.trim().length === 0) {
       res.status(400).json({ error: 'requirements text is required' });
@@ -195,10 +195,9 @@ router.post('/project/triage', (_req: Request, res: Response) => {
     }
 
     // Detect phases with no open/active scopes that have done predecessors
-    const phaseOrder = ['analyze', 'design', 'build', 'test', 'deploy', 'monitor'];
-    for (let i = 1; i < phaseOrder.length; i++) {
-      const prevPhase = phaseOrder[i - 1];
-      const currPhase = phaseOrder[i];
+    for (let i = 1; i < PHASE_ORDER.length; i++) {
+      const prevPhase = PHASE_ORDER[i - 1];
+      const currPhase = PHASE_ORDER[i];
       const prevScopes = byPhase[prevPhase] ?? [];
       const currScopes = byPhase[currPhase] ?? [];
 
@@ -222,7 +221,7 @@ router.post('/project/triage', (_req: Request, res: Response) => {
     }
 
     // Detect long-running active scopes (updated more than 24h ago)
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(Date.now() - ONE_DAY_MS).toISOString();
     const staleActive = scopes.filter(s => s.status === 'active' && s.updated_at < oneDayAgo);
     for (const s of staleActive) {
       suggestions.push(`Scope ${s.scope_id} (${s.title}) has been active since ${s.updated_at} — may be stale`);

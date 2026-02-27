@@ -6,6 +6,9 @@ export interface PhaseMetadata {
 }
 export declare const BOOTSTRAP_PHASES: ScopeTemplateInput['phase'][];
 export declare const PHASE_METADATA: Record<ScopeTemplateInput['phase'], PhaseMetadata>;
-/** Truncate text to a maximum length at a word boundary, appending '…' if truncated. */
+/** Ordered list of SDLC phases used for dependency/triage checks. */
+export declare const PHASE_ORDER: string[];
+/** One day in milliseconds — used for stale-active-scope detection. */
+export declare const ONE_DAY_MS: number;
 export declare function truncateAtWordBoundary(text: string, maxLength: number): string;
 //# sourceMappingURL=bootstrap-config.d.ts.map

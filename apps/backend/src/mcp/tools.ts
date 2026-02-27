@@ -1,6 +1,6 @@
 import * as store from '../scopes/scope-store';
 import { generateScopeId } from '../scopes/scope-types';
-import { BOOTSTRAP_PHASES, PHASE_METADATA, truncateAtWordBoundary } from '../scopes/bootstrap-config';
+import { BOOTSTRAP_PHASES, PHASE_METADATA, PHASE_ORDER, ONE_DAY_MS, truncateAtWordBoundary } from '../scopes/bootstrap-config';
 
 export interface ToolResult {
   content: Array<{ type: 'text'; text: string }>;
@@ -221,7 +221,7 @@ export async function handleTool(
           byPhase[s.phase].push(s);
         }
 
-        const phaseOrder = ['analyze', 'design', 'build', 'test', 'deploy', 'monitor'];
+        const phaseOrder = PHASE_ORDER;
         for (let i = 1; i < phaseOrder.length; i++) {
           const prevPhase = phaseOrder[i - 1];
           const currPhase = phaseOrder[i];
@@ -241,7 +241,7 @@ export async function handleTool(
           suggestions.push('No scopes found. Use bootstrap_project to initialize.');
         }
 
-        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const oneDayAgo = new Date(Date.now() - ONE_DAY_MS).toISOString();
         for (const s of scopes.filter(s => s.status === 'active' && s.updated_at < oneDayAgo)) {
           suggestions.push(`Scope ${s.scope_id} has been active since ${s.updated_at} — may be stale`);
         }

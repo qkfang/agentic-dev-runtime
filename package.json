@@ -1,0 +1,15 @@
+{
+  "name": "agentic-dev-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Control Plane server for coordinating AI coding agents",
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend"
+  ],
+  "scripts": {
+    "backend": "npm run start --workspace=apps/backend",
+    "frontend": "npm run start --workspace=apps/frontend",
+    "build": "npm run build --workspace=apps/backend && npm run build --workspace=apps/frontend"
+  }
+}

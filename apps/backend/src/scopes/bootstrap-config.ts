@@ -43,7 +43,11 @@ export const PHASE_METADATA: Record<ScopeTemplateInput['phase'], PhaseMetadata> 
   },
 };
 
-/** Truncate text to a maximum length at a word boundary, appending '…' if truncated. */
+/** Ordered list of SDLC phases used for dependency/triage checks. */
+export const PHASE_ORDER: string[] = ['analyze', 'design', 'build', 'test', 'deploy', 'monitor'];
+
+/** One day in milliseconds — used for stale-active-scope detection. */
+export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 export function truncateAtWordBoundary(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   const truncated = text.slice(0, maxLength);

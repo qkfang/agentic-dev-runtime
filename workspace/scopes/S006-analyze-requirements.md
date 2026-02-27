@@ -1,19 +1,20 @@
 ---
-scope_id: S001
+scope_id: S006
 title: Analyze Requirements
 phase: analyze
-status: active
-agent_id: agent-test-1
-created_at: 2026-02-27T11:37:45.739Z
-updated_at: '2026-02-27T11:47:53.328Z'
+status: open
+agent_id: 
+created_at: 2026-02-27T11:47:53.262Z
+updated_at: 2026-02-27T11:47:53.262Z
 priority: normal
 ---
+
 ## Description
 
 Review and analyze the provided requirements. Identify key entities, constraints, and success criteria.
 
 Requirements context:
-Build a RESTful e-commerce API with products, cart, checkout, and payment processing.
+Build a TODO app with user auth and task management
 
 ## Inputs
 
@@ -29,4 +30,5 @@ Build a RESTful e-commerce API with products, cart, checkout, and payment proces
 
 
 ## Result
+
 

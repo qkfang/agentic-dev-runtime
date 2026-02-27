@@ -3,10 +3,6 @@ import { Link } from 'react-router-dom';
 import { getProjectStatus, triageProject } from '../api/client';
 import { ProjectStatus, Scope } from '../types';
 
-const StatusBadge: React.FC<{ status: string }> = ({ status }) => (
-  <span className={`badge badge-${status}`}>{status}</span>
-);
-
 const Dashboard: React.FC = () => {
   const [status, setStatus] = useState<ProjectStatus | null>(null);
   const [loading, setLoading] = useState(true);
