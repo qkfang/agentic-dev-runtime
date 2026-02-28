@@ -1,17 +1,17 @@
 # Control Plane Backend
 
-Node.js/TypeScript REST API for the Agentic Dev Runtime Control Plane.
+.NET 8 Web API for the Agentic Dev Runtime Control Plane.
 
 ## Setup
 
 ```bash
-npm install
+dotnet restore
 ```
 
 ## Development
 
 ```bash
-npm run dev
+dotnet run
 ```
 
 Runs on port 3001 by default.
@@ -19,7 +19,13 @@ Runs on port 3001 by default.
 ## Build
 
 ```bash
-npm run build
+dotnet build
+```
+
+## Publish
+
+```bash
+dotnet publish -c Release -o out
 ```
 
 ## Environment Variables
