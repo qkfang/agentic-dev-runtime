@@ -115,6 +115,28 @@ public class ScopeStore
         });
     }
 
+    public async Task BootstrapAsync(string requirementsMd)
+    {
+        var workspaceDir = Path.GetDirectoryName(_scopesDir)
+            ?? throw new InvalidOperationException("Cannot resolve workspace directory from scopes path.");
+        var requirementsFile = Path.Combine(workspaceDir, "requirements.md");
+        await File.WriteAllTextAsync(requirementsFile, requirementsMd);
+    }
+
+    public async Task<object> GetStatusAsync()
+    {
+        var scopes = await ListAsync();
+        return new
+        {
+            total = scopes.Count,
+            done = scopes.Count(s => s.status == "done"),
+            active = scopes.Count(s => s.status == "active"),
+            open = scopes.Count(s => s.status == "open"),
+            blocked = scopes.Count(s => s.status == "blocked"),
+            scopes
+        };
+    }
+
     private static string Slugify(string text)
     {
         var slug = text.ToLower();

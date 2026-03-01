@@ -119,3 +119,34 @@ public class HealthController : ControllerBase
         return Ok(new { status = "ok" });
     }
 }
+
+[ApiController]
+[Route("[controller]")]
+public class ProjectController : ControllerBase
+{
+    private readonly ScopeStore _scopeStore;
+
+    public ProjectController(ScopeStore scopeStore)
+    {
+        _scopeStore = scopeStore;
+    }
+
+    [HttpPost("bootstrap")]
+    public async Task<IActionResult> Bootstrap([FromBody] BootstrapRequest request)
+    {
+        if (string.IsNullOrEmpty(request.requirements))
+        {
+            return BadRequest(new { error = "requirements required" });
+        }
+
+        await _scopeStore.BootstrapAsync(request.requirements);
+        return Ok(new { success = true });
+    }
+
+    [HttpGet("status")]
+    public async Task<IActionResult> Status()
+    {
+        var status = await _scopeStore.GetStatusAsync();
+        return Ok(status);
+    }
+}

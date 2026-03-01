@@ -1,0 +1,94 @@
+name: Check Progress
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */2 * * *'
+
+jobs:
+  check-progress:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Merge approved PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr list --state open \
+            --json number,reviewDecision,mergeable \
+            --jq '.[] | select(.reviewDecision == "APPROVED" and .mergeable == "MERGEABLE") | .number' \
+            | while read pr_number; do
+              echo "Merging PR #$pr_number"
+              gh pr merge "$pr_number" --squash --delete-branch || true
+            done
+
+      - name: Mark completed scope PRs as done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - << 'PYEOF'
+          import subprocess, re, json, glob
+          from datetime import datetime, timezone
+
+          result = subprocess.run(
+              ['gh', 'pr', 'list', '--state', 'merged', '--limit', '50',
+               '--json', 'number,title,body'],
+              capture_output=True, text=True
+          )
+          prs = json.loads(result.stdout) if result.stdout.strip() else []
+
+          completed = set()
+          for pr in prs:
+              for text in [pr.get('title', ''), pr.get('body', '') or '']:
+                  for m in re.finditer(r'\[(S\d+)\]', text):
+                      completed.add(m.group(1))
+
+          print(f"Completed scopes from merged PRs: {completed}")
+
+          now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          for scope_id in completed:
+              for f in glob.glob(f'workspace/scopes/{scope_id}-*.md'):
+                  content = open(f).read()
+                  if re.search(r'status:\s*done', content):
+                      continue
+                  content = re.sub(r'(status:\s*)\S+', r'\1done', content, count=1)
+                  content = re.sub(r'(updated_at:\s*)\S+', rf'\1{now}', content, count=1)
+                  open(f, 'w').write(content)
+                  print(f"Marked {scope_id} as done")
+          PYEOF
+
+      - name: Update progress
+        run: python3 scripts/update_progress.py
+
+      - name: Create issues for remaining open scopes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for f in workspace/scopes/*.md; do
+            [ -f "$f" ] || continue
+            scope_id=$(python3 scripts/parse_scope.py "$f" scope_id)
+            title=$(python3 scripts/parse_scope.py "$f" title)
+            status=$(python3 scripts/parse_scope.py "$f" status)
+            [ "$status" = "open" ] || continue
+            count=$(gh issue list --search "[$scope_id] in:title" --state open --json number --jq 'length' 2>/dev/null || echo "0")
+            [ "${count:-0}" -gt 0 ] && continue
+            gh issue create \
+              --title "[$scope_id] $title" \
+              --body "$(cat "$f")" \
+              --label "copilot" || true
+          done
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase
+          git add workspace/
+          git diff --staged --quiet || git commit -m "chore: update progress and scope statuses [skip ci]"
+          git push
