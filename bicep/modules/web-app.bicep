@@ -10,8 +10,8 @@ param tags object = {}
 @description('The name of the App Service Plan')
 param appServicePlanName string
 
-@description('Node.js version for the runtime stack')
-param nodeVersion string = 'NODE|20-lts'
+@description('.NET version for the runtime stack')
+param dotnetVersion string = 'DOTNETCORE|8.0'
 
 @description('SKU for the App Service Plan')
 param skuName string = 'B1'
@@ -38,7 +38,7 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
-      linuxFxVersion: nodeVersion
+      linuxFxVersion: dotnetVersion
       appSettings: appSettings
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
