@@ -22,6 +22,11 @@ public class Scope
     public string result { get; set; } = string.Empty;
 }
 
+public class BootstrapRequest
+{
+    public string requirements { get; set; } = string.Empty;
+}
+
 public class ClaimRequest
 {
     public string agent_id { get; set; } = string.Empty;

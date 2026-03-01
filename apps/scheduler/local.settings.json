@@ -3,6 +3,8 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "SchedulerCronExpression": "0 */2 * * * *"
+    "SchedulerCronExpression": "0 0 */2 * * *",
+    "GitHubToken": "",
+    "GitHubRepo": ""
   }
 }
